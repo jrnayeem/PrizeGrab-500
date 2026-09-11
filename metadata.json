@@ -1,6 +1,0 @@
-{
-  "name": "PrizeGrab – $500 Grocery Stimulus",
-  "description": "Learn about the PrizeGrab $500 Grocery Stimulus promotion, eligibility requirements, and participation details.",
-  "requestFramePermissions": [],
-  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
-}
