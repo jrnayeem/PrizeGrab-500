@@ -1,5 +1,5 @@
 import { track } from '@vercel/analytics';
-import { OFFER_URL, ALLOWED_CAMPAIGN_KEYS } from '../config';
+import { CTA_URLS, ALLOWED_CAMPAIGN_KEYS } from '../config';
 import { UtmParams, TrackEventName, TrackingEventData } from '../types';
 
 /**
@@ -25,10 +25,8 @@ export function getCampaignParams(): UtmParams {
 /**
  * Appends preserved UTM parameters to the destination URL
  */
-export function buildOfferUrlWithParams(baseUrl: string = OFFER_URL): string {
-  const destination = baseUrl && baseUrl !== 'YOUR_OFFER_URL_HERE'
-    ? baseUrl
-    : 'https://linkthem.net/aff_c?offer_id=4837&aff_id=201949&source=social';
+export function buildOfferUrlWithParams(baseUrl: string): string {
+  const destination = baseUrl;
 
   const params = getCampaignParams();
   const query = new URLSearchParams();
@@ -74,7 +72,7 @@ export function trackEvent(name: TrackEventName, data?: TrackingEventData): void
 }
 
 /**
- * Standard CTA click handler: tracks events and navigates immediately to OFFER_URL
+ * Standard CTA click handler: tracks events and navigates to that CTA's URL
  */
 export function handleEligibilityCtaClick(location: string): void {
   const params = getCampaignParams();
@@ -96,7 +94,16 @@ export function handleEligibilityCtaClick(location: string): void {
     utm_content: params.utm_content,
   });
 
-  // 2. Preserve campaign parameters and navigate to OFFER_URL immediately
-  const destination = buildOfferUrlWithParams(OFFER_URL);
+  // All responsive header variants share one logical Header CTA link.
+  const ctaKey = location.startsWith('header_') ? 'header_cta' : location;
+  const ctaUrl = CTA_URLS[ctaKey];
+
+  if (!ctaUrl) {
+    console.warn(`No CTA URL configured for: ${ctaKey}`);
+    return;
+  }
+
+  // 2. Preserve campaign parameters and navigate to this CTA's assigned URL
+  const destination = buildOfferUrlWithParams(ctaUrl);
   window.location.href = destination;
 }
